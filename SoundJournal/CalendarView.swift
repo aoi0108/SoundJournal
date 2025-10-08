@@ -27,7 +27,6 @@ struct DecoratedCalendarView: View {
             }
             .padding()
         }
-        .navigationTitle("カレンダー")
         .navigationBarTitleDisplayMode(.inline)
         // selectedDateに値がセットされたら、DateDetailViewをシートとして表示
         .sheet(item: $selectedDate) { wrapper in
@@ -73,10 +72,13 @@ fileprivate struct CalendarView: UIViewRepresentable {
         // 日付の装飾を決定する
         func calendarView(_ calendarView: UICalendarView, decorationFor dateComponents: DateComponents) -> UICalendarView.Decoration? {
             guard let date = dateComponents.date else { return nil }
+            
+            // その日の最初の記録を取得
             let recordsForDate = parent.dataStore.records.filter { Calendar.current.isDate($0.date, inSameDayAs: date) }
             
-            if !recordsForDate.isEmpty {
-                return .default()
+            // 記録がある場合、その気分に対応する画像で装飾する
+            if let firstRecord = recordsForDate.first, let image = UIImage(named: firstRecord.moodImageName) {
+                return .image(image, color: .gray, size: .small)
             }
             
             return nil

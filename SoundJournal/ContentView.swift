@@ -43,6 +43,7 @@ class DataStore: ObservableObject {
 struct ContentView: View {
     @StateObject private var dataStore = DataStore()
     @State private var audioPlayer: AVAudioPlayer?
+    @State private var isShowingHelp = false // HelpView表示用のState
     private let backgroundColor = Color(red: 240/255, green: 240/255, blue: 247/255)
     
     private let columns: [GridItem] = Array(repeating: .init(.flexible()), count: 2)
@@ -75,15 +76,22 @@ struct ContentView: View {
                     }
                     .padding(.horizontal, 40)
                 }
-                .navigationTitle("Sound Journal")
                 .navigationBarTitleDisplayMode(.inline)
                 .toolbar {
+                    ToolbarItem(placement: .navigationBarLeading) {
+                        Button(action: { isShowingHelp = true }) {
+                            Image(systemName: "questionmark.circle")
+                        }
+                    }
                     ToolbarItem(placement: .navigationBarTrailing) {
                         NavigationLink(destination: DecoratedCalendarView(dataStore: dataStore)) {
                             Image(systemName: "calendar")
                         }
                     }
                 }
+            }
+            .sheet(isPresented: $isShowingHelp) {
+                HelpView()
             }
         }
     }
